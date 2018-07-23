@@ -1,4 +1,13 @@
-
+'''
+###################################################
+title: NFL Probowl Predictor in 5 Years
+author: Kevin Huang
+date: 20180720
+output: Classification Problem 
+Notes: Preprocessing
+R version: 3.5.1: Feather spray # version
+###################################################
+'''
 
 
 #---------------------------------
@@ -20,7 +29,7 @@ library(psych)
 ###################################################
 # Read in the dataset 1 
 ###################################################
-setwd("~/Desktop/Windows Stuff Moved Over/Software Tools (Python, R, Tableau,etc)/Kaggle & Case studies/NFL_QB_20170519/Data/Player_Stats")
+setwd("/Users/kevin8523/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Windows Stuff Moved Over/Software Tools (Python, R, Tableau,etc)/Kaggle & Case studies/NFL_QB_20170519/Data/Player_Stats")
 getwd()
 
 #Read in one file
@@ -131,7 +140,7 @@ write.csv(Players_All, file = "Players_All.csv")
 ###################################################
 # Read in the dataset 2
 ###################################################
-setwd("~/Desktop/Windows Stuff Moved Over/Software Tools (Python, R, Tableau,etc)/Kaggle & Case studies/NFL_QB_20170519/Data/Team_Rankings")  
+setwd("/Users/kevin8523/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Windows Stuff Moved Over/Software Tools (Python, R, Tableau,etc)/Kaggle & Case studies/NFL_QB_20170519/Data/Team_Rankings")
 getwd()
 
 #Read in one file
@@ -240,7 +249,7 @@ write.csv(Team_All, file = "Team_All.csv")
 ###################################################
 # Read in the dataset 3
 ###################################################
-setwd("~/Desktop/Windows Stuff Moved Over/Software Tools (Python, R, Tableau,etc)/Kaggle & Case studies/NFL_QB_20170519/Data")  
+setwd("/Users/kevin8523/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Windows Stuff Moved Over/Software Tools (Python, R, Tableau,etc)/Kaggle & Case studies/NFL_QB_20170519/Data")
 getwd()
 
 #Read in one file
@@ -334,7 +343,7 @@ write.csv(Combine_All, file = "Combine_All.csv")
 ###################################################
 # Read in the dataset 4
 ###################################################
-setwd("~/Desktop/Windows Stuff Moved Over/Software Tools (Python, R, Tableau,etc)/Kaggle & Case studies/NFL_QB_20170519/Data")  
+setwd("/Users/kevin8523/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Windows Stuff Moved Over/Software Tools (Python, R, Tableau,etc)/Kaggle & Case studies/NFL_QB_20170519/Data")
 getwd()
 
 #Read in one file
@@ -397,7 +406,7 @@ write.csv(Coach_All, file = "Coach_All.csv")
 ###################################################
 # Read in the dataset 5
 ###################################################
-setwd("~/Desktop/Windows Stuff Moved Over/Software Tools (Python, R, Tableau,etc)/Kaggle & Case studies/NFL_QB_20170519/Data")
+setwd("/Users/kevin8523/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Windows Stuff Moved Over/Software Tools (Python, R, Tableau,etc)/Kaggle & Case studies/NFL_QB_20170519/Data")
 getwd()
 
 #Read in one file
@@ -458,7 +467,7 @@ write.csv(Probowl_All, file = "Probowl_All.csv")
 ###################################################
 # Read in the dataset 6
 ###################################################
-setwd("~/Desktop/Windows Stuff Moved Over/Software Tools (Python, R, Tableau,etc)/Kaggle & Case studies/NFL_QB_20170519/Data")
+setwd("/Users/kevin8523/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Windows Stuff Moved Over/Software Tools (Python, R, Tableau,etc)/Kaggle & Case studies/NFL_QB_20170519/Data")
 getwd()
 
 #Read in one file
@@ -561,12 +570,13 @@ Dataset_All_Dedup <- Dataset_All %>%
 
 # Only use data before 2012 for Analysis
 
-Dataset_Real <- Dataset_All_Dedup %>%
-  filter(Year.x %in% c('2012', '2013', '2014', '2015', '2016', '2017'))
+# Dataset_Real <- Dataset_All_Dedup %>%
+#   filter(Year.x %in% c('2012', '2013', '2014', '2015', '2016', '2017'))
 
-Dataset_Subset <- Dataset_All_Dedup %>%
-  filter(!(Year.x %in% c('2012', '2013', '2014', '2015', '2016', '2017')))
+# Dataset_Subset <- Dataset_All_Dedup %>%
+#   filter(!(Year.x %in% c('2012', '2013', '2014', '2015', '2016', '2017')))
 
+Dataset_Subset <- Dataset_All_Dedup
 
 
 
@@ -739,6 +749,33 @@ Dataset_Subset_All <- select(Dataset_Subset, Player, School, Conf, G, Cmp, Att, 
        Total_Yds, Total_Tds, Total_TD_INT_Ratio, Year_1, Pro_Bowl)
 
 
+
+# Remove all unnecssary Data Sets
+rm(list = ls()[!ls() %in% c("Dataset_Subset_All", "Dataset_Subset", "Dataset_Subset_train",
+                            "Dataset_Subset_test", "Dataset_Real")])
+
+#Change all Yes to 1
+Dataset_Subset_All$Pro_Bowl[Dataset_Subset_All$Pro_Bowl == 'Yes'] <- 1
+
+#Count of # of probowlers in the list
+Dataset_Subset_All %>%
+  filter(Pro_Bowl == 1) %>%
+  select(Player)
+
+#Change all NA to 0 for pro bowl list
+Dataset_Subset_All$Pro_Bowl[is.na(Dataset_Subset_All$Pro_Bowl)] <- 0
+
+#Change Pro bowl column to numeric data type
+Dataset_Subset_All$Pro_Bowl <- as.numeric(Dataset_Subset_All$Pro_Bowl)
+
+#Set seed for reproducible results
+set.seed(21)
+#sample <- sample.int(n = nrow(Dataset_Subset_All), size = floor(.7*nrow(Dataset_Subset_All)), replace = F)
+
+#Train on data gathered up to 2008 and will test on 2009-2011 
+Dataset_Subset_train <- Dataset_Subset_All[480:1163, ]
+Dataset_Subset_test <- Dataset_Subset_All[1:479, ]
+
 # #normalize - Doesnt do it across the dataframe equally
 # normalize <- function(x) {
 #   return((x - min(x)) / (max(x) - min(x)))
@@ -748,18 +785,66 @@ Dataset_Subset_All <- select(Dataset_Subset, Player, School, Conf, G, Cmp, Att, 
 # colMeans(Dataset_Subset_Scale)
 # apply(Dataset_Subset_Scale,2,sd)
 
-#Normalize
-Dataset_Subset_Scale <- Dataset_Subset_All[(c(4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21))]
-Dataset_Subset_Scale <- scale(Dataset_Subset_Scale)
-colMeans(Dataset_Subset_Scale)
-apply(Dataset_Subset_Scale,2,sd)
+# # Not needed for logisitc regression
+# # Feature Scaling
+# Dataset_Subset_train[, 4:21] = scale(Dataset_Subset_train[, 4:21])
+# Dataset_Subset_test[, 4:21] = scale(Dataset_Subset_test[, 4:21])
+# colMeans(Dataset_Subset_train[, 4:21])
+# apply(Dataset_Subset_train[,4:21],2,sd)
 
-#Put it back together
-Dataset_Subset_Scale <- as.data.frame(Dataset_Subset_Scale)
-Dataset_Subset_Scale$Player <- Dataset_Subset$Player
-Dataset_Subset_Scale$School <- Dataset_Subset$School
-Dataset_Subset_Scale$Conf <- Dataset_Subset$Conf
-Dataset_Subset_Scale$Year_1 <- Dataset_Subset$Year_1
-Dataset_Subset_Scale$Pro_Bowl <- Dataset_Subset$Pro_Bowl
-Dataset_Subset_All <- Dataset_Subset_Scale[,c(19,20,21,1,2,3,4,5,6,7,8,9,10,11,12,13,14,
-                                                15,16,17,18,22,23)]
+str(Dataset_Subset_train)
+
+# ML Algorithim - If error use: #control=glm.control(maxit=50)) # Number of iterations
+# Model 1
+classifier = glm(formula = Pro_Bowl ~ .,
+                 family = binomial,
+                 data = Dataset_Subset_train[,!colnames(Dataset_Subset_train)
+                                             %in% c("Player", "School", "Conf", "Year_1",
+                                                    #"Rush_A","Rush_Yds","Rush_Avg","Rush_TD")])
+                                                    "Total_Yds","Total_Tds","Total_TD_INT_Ratio")])
+# Model 2
+classifier_2 = glm(formula = Pro_Bowl ~ .,
+                 family = binomial,
+                 data = Dataset_Subset_train[,!colnames(Dataset_Subset_train)
+                                             %in% c("Player", "School", "Conf", "Year_1",
+                                                    "Rush_A","Rush_Yds","Rush_Avg","Rush_TD",
+                                                    "Total_Yds","Total_Tds","Total_TD_INT_Ratio")])
+
+
+prob_pred = predict(classifier, type = 'response', newdata = Dataset_Subset_test[-23])
+prob_pred
+y_pred = ifelse(prob_pred > 0.5, 1, 0)
+Dataset_Subset_test$Predictions <- y_pred
+Dataset_Subset_test$Prediction_Prob <- prob_pred
+
+#Confusion Matrix, Plot visual, More ML algorithims - maybe try pca dimension reduction, or poisson
+
+
+
+#===================================================================================================================
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+####################################################################################################################
+#===================================================================================================================
+#EXTRA
+
+
+#WHAT I HAVE LEFT
+#Additional Things
+#3. Machine Learning ==> Train and test data
+###SVM RANDOM FOREST LOGISTIC REGRESSION
+# Try clustering it and see if similar qb's go together
+
+#. More Visualization of variables to derive more info
+### Plot single variables & relationships b/w variables
+### plot the distribution of pro bowl qb
+### plot relationships b/w key variables scatterplots ==> price carats
+
+#5 Feature Engineering for better results and redo ML algorithims
+# Create new variables
+# Clean up the data, some of the data is incorrect like Robert Griffin making the pro bowl
+# Find players from States, Create a States variable
+
+#6. Write up Analysis

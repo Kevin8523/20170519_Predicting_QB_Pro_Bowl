@@ -1,5 +1,10 @@
-# 20170519_Predicting_QB_Pro_Bowl
+# NFL Draft QB Study
 A study on College Quarterbacks and how well they translate into the pros
+
+## Data Files
+1. preprocessing.R
+2. eda.R
+3. full_script
 
 ## Overview 
 - Personal project analyzing college quarterbacks and predicting wheter they will make the pro bowl within 5 years.
