@@ -2,9 +2,9 @@
 A study on College Quarterbacks and how well they translate into the pros
 
 ## Data Files
-1. preprocessing.R
-2. eda.R
-3. full_script
+1. preprocessing.R - Script to grab all the raw data and create data files to use for exploration
+2. eda.R - Exploration of data to get a good overview of the data
+3. full_script - Full script
 
 ## Overview 
 - Personal project analyzing college quarterbacks and predicting wheter they will make the pro bowl within 5 years.
