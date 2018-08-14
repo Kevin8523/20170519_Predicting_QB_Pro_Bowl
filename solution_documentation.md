@@ -13,11 +13,15 @@ Notes on the work done, papers read, and attempts to the final solution
 
 
 ## Exploratory Data Analysis
+
+### Things I've done
 What would a GM would want to see and know to find interesting takeaways
 - ~~Conference vs probowl: Count & Color == DONE~~
 - ~~Year vs probowl == DONE~~
 - ~~Accuracy vs probowl == DONE~~
 - ~~height vs probowl == DONE~~
+
+### Things to invesetigate
 - pca vs probowl (Could try accuracy with other features) == WIP
 - rounds drafted vs probowl
 - Common themes of 1st round busts
